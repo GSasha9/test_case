@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 
 import ModalForm, { type FieldType } from '../form/modal-form';
 
+import './main-table.scss';
+
 import { dataExample } from '@/shared/constants/data-example';
 import TABLE_DATA from '@/shared/constants/table-data';
 import type { DataType } from '@/shared/types/data-type';
@@ -141,9 +143,12 @@ const MainTable = () => {
           setIsModalOpen(false);
           setEditingRecord(null);
         }}
+        className="modal"
         footer={null}
       >
-        <ModalForm form={form} onSubmit={handleSubmit} />
+        <div className="modal-form-wrapper">
+          <ModalForm form={form} onSubmit={handleSubmit} />
+        </div>
       </Modal>
     </>
   );

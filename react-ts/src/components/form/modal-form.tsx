@@ -24,7 +24,13 @@ const ModalForm = ({ form, onSubmit }: ModalFormProps) => {
   };
 
   return (
-    <Form form={form} name="modal_form" onFinish={handleFinish}>
+    <Form
+      form={form}
+      name="modal_form"
+      onFinish={handleFinish}
+      labelCol={{ span: 4 }}
+      wrapperCol={{ span: 20 }}
+    >
       <Form.Item<FieldType>
         label={TABLE_DATA.name.dataIndex}
         name="name"
@@ -43,7 +49,10 @@ const ModalForm = ({ form, onSubmit }: ModalFormProps) => {
         name="date"
         rules={[{ required: true, message: TABLE_DATA.date.errorMessage }]}
       >
-        <DatePicker placeholder={TABLE_DATA.date.inputPlaceholder} />
+        <DatePicker
+          placeholder={TABLE_DATA.date.inputPlaceholder}
+          style={{ width: '100%' }}
+        />
       </Form.Item>
       <Form.Item<FieldType>
         label={TABLE_DATA.number.dataIndex}
