@@ -1,6 +1,7 @@
-import { Table, Space, Modal } from 'antd';
 import type { TableProps } from 'antd';
+import { Modal, Space, Table } from 'antd';
 import { useState } from 'react';
+
 import ModalForm from '../form/modal-form';
 
 interface DataType {
@@ -14,13 +15,13 @@ const dataSource: DataType[] = [
   {
     key: '1',
     name: 'Mike',
-    date: '11.05.2025',
+    date: '2025-11-05',
     number: 42,
   },
   {
     key: '2',
     name: 'John',
-    date: '15.06.2025',
+    date: '2025-06-14',
     number: 42,
   },
 ];

@@ -1,7 +1,7 @@
 import { DatePicker, Form, Input } from 'antd';
+import dayjs from 'dayjs';
 
 import SubmitButton from '../buttons/submit/submit-button';
-import onFinish, { type MyFormValues } from './utils/on-finish';
 
 export type FieldType = {
   name: string;
@@ -16,11 +16,9 @@ interface ModalFormProps {
 const ModalForm = ({ onSubmit }: ModalFormProps) => {
   const [form] = Form.useForm();
 
-  const handleFinish = (values: MyFormValues) => {
-    const formattedValues = onFinish(values);
-
+  const handleFinish = (values: FieldType) => {
     form.resetFields();
-    onSubmit(formattedValues);
+    onSubmit(values);
   };
 
   return (
@@ -35,6 +33,10 @@ const ModalForm = ({ onSubmit }: ModalFormProps) => {
       <Form.Item<FieldType>
         label="date"
         name="date"
+        getValueProps={(value) => ({
+          value: value && dayjs(Number(value)),
+        })}
+        normalize={(value) => value && `${dayjs(value).format('YYYY-MM-DD')}`}
         rules={[{ required: true, message: 'Please input date!' }]}
       >
         <DatePicker />
