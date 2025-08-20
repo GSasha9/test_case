@@ -1,6 +1,7 @@
 import type { TableProps } from 'antd';
 import { Button, Modal, Space, Table } from 'antd';
 import { Form } from 'antd';
+import { Input } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 
@@ -14,9 +15,8 @@ const MainTable = () => {
   const [tableData, setTableData] = useState(dataExample);
   const [editingRecord, setEditingRecord] = useState<DataType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filteredData, setFilteredData] = useState<DataType[] | null>(null);
   const [form] = Form.useForm();
-
-  console.log(tableData);
 
   useEffect(() => {
     if (!isModalOpen) form.resetFields();
@@ -24,6 +24,16 @@ const MainTable = () => {
 
   const handleButton = () => {
     setIsModalOpen(true);
+  };
+
+  const hadleSearchInput = (searchText: string) => {
+    const filteredData = tableData.filter((row) =>
+      Object.values(row).some((value) =>
+        String(value).toLowerCase().includes(searchText.toLowerCase())
+      )
+    );
+
+    setFilteredData(filteredData);
   };
 
   const handleEdit = (record: DataType) => {
@@ -75,11 +85,14 @@ const MainTable = () => {
       title: TABLE_DATA.name.title,
       dataIndex: TABLE_DATA.name.dataIndex,
       key: TABLE_DATA.name.key,
+      sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
       title: TABLE_DATA.date.title,
       dataIndex: TABLE_DATA.date.dataIndex,
       key: TABLE_DATA.date.key,
+      defaultSortOrder: 'descend',
+      sorter: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     },
     {
       title: TABLE_DATA.number.title,
@@ -104,11 +117,21 @@ const MainTable = () => {
 
   return (
     <>
-      <Button type="primary" onClick={handleButton}>
-        {' '}
-        Add new row{' '}
-      </Button>
-      <Table<DataType> dataSource={tableData} columns={columns} />
+      <Space size={'middle'}>
+        <Input
+          placeholder="search"
+          onChange={(e) => hadleSearchInput(e.target.value)}
+        />{' '}
+        <Button type="primary" onClick={handleButton}>
+          {' '}
+          Add new row{' '}
+        </Button>
+      </Space>
+
+      <Table<DataType>
+        dataSource={filteredData ?? tableData}
+        columns={columns}
+      />
       <Modal
         open={isModalOpen}
         onCancel={() => {

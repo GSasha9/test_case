@@ -31,7 +31,7 @@ const ModalForm = ({ form, onSubmit }: ModalFormProps) => {
         rules={[
           { required: true, message: TABLE_DATA.name.inputPlaceholder },
           {
-            pattern: /^[A-Za-zА-Яа-я]+$/,
+            pattern: /^[A-Za-z]+$/,
             message: TABLE_DATA.name.errorMessage,
           },
         ]}
