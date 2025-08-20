@@ -1,82 +1,114 @@
 import type { TableProps } from 'antd';
-import { Modal, Space, Table } from 'antd';
-import { useState } from 'react';
+import { Button, Modal, Space, Table } from 'antd';
+import { Form } from 'antd';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 
-import ModalForm from '../form/modal-form';
+import ModalForm, { type FieldType } from '../form/modal-form';
 
-interface DataType {
-  key: string;
-  name: string;
-  date: string;
-  number: number;
-}
-
-const dataSource: DataType[] = [
-  {
-    key: '1',
-    name: 'Mike',
-    date: '2025-11-05',
-    number: 42,
-  },
-  {
-    key: '2',
-    name: 'John',
-    date: '2025-06-14',
-    number: 42,
-  },
-];
-
-const columns: TableProps<DataType>['columns'] = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: 'Date',
-    dataIndex: 'date',
-    key: 'date',
-  },
-  {
-    title: 'Number',
-    dataIndex: 'number',
-    key: 'number',
-  },
-  {
-    title: 'Action',
-    key: 'action',
-    render: () => (
-      <Space size="middle">
-        <a>Edit</a>
-        <a>Delete</a>
-      </Space>
-    ),
-  },
-];
+import { dataExample } from '@/shared/constants/data-example';
+import TABLE_DATA from '@/shared/constants/table-data';
+import type { DataType } from '@/shared/types/data-type';
 
 interface MainTableProps {
   isOpen: boolean;
-  onClose: () => void;
 }
 
-const MainTable = ({ isOpen, onClose }: MainTableProps) => {
-  const [tableData, setTableData] = useState(dataSource);
+const MainTable = ({ isOpen }: MainTableProps) => {
+  const [tableData, setTableData] = useState(dataExample);
+  const [editingRecord, setEditingRecord] = useState<DataType | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(isOpen);
+  const [form] = Form.useForm();
 
   console.log(tableData);
+
+  useEffect(() => {
+    if (!isOpen) form.resetFields();
+  }, [isOpen, form]);
+
+  const handleEdit = (record: DataType) => {
+    setEditingRecord(record);
+    form.setFieldsValue({
+      name: record.name,
+      date: dayjs(record.date),
+      number: record.number,
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = (key: string) => {
+    setTableData((prev) => prev.filter((item) => item.key !== key));
+  };
+
+  const handleSubmit = (values: FieldType) => {
+    if (editingRecord) {
+      setTableData((prev) =>
+        prev.map((item) =>
+          item.key === editingRecord.key
+            ? {
+                ...item,
+                name: values.name,
+                date: values.date.format('YYYY-MM-DD'),
+                number: values.number,
+              }
+            : item
+        )
+      );
+      setEditingRecord(null);
+    } else {
+      setTableData((prev) => [
+        ...prev,
+        {
+          key: String(prev.length + 1),
+          name: values.name,
+          date: values.date.format('YYYY-MM-DD'),
+          number: values.number,
+        },
+      ]);
+    }
+
+    setIsModalOpen(false);
+  };
+
+  const columns: TableProps<DataType>['columns'] = [
+    {
+      title: TABLE_DATA.name.title,
+      dataIndex: TABLE_DATA.name.dataIndex,
+      key: TABLE_DATA.name.key,
+    },
+    {
+      title: TABLE_DATA.date.title,
+      dataIndex: TABLE_DATA.date.dataIndex,
+      key: TABLE_DATA.date.key,
+    },
+    {
+      title: TABLE_DATA.number.title,
+      dataIndex: TABLE_DATA.number.dataIndex,
+      key: TABLE_DATA.number.key,
+    },
+    {
+      title: TABLE_DATA.action.title,
+      key: TABLE_DATA.action.key,
+      render: (_, record) => (
+        <Space size="middle">
+          <Button onClick={() => handleEdit(record)}>Edit</Button>
+          <Button onClick={() => handleDelete(record.key)} danger>
+            Delete
+          </Button>
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <>
       <Table<DataType> dataSource={tableData} columns={columns} />
-      <Modal open={isOpen} onCancel={onClose} footer={null}>
-        <ModalForm
-          onSubmit={(values) => {
-            setTableData([
-              ...tableData,
-              { key: Date.now().toString(), ...values },
-            ]);
-            onClose();
-          }}
-        />
+      <Modal
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}
+      >
+        <ModalForm form={form} onSubmit={handleSubmit} />
       </Modal>
     </>
   );

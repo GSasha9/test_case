@@ -16,7 +16,7 @@ function App() {
         {' '}
         Add new row{' '}
       </Button>
-      <MainTable isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <MainTable isOpen={isModalOpen} />
     </main>
   );
 }
