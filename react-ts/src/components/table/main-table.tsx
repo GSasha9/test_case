@@ -1,7 +1,5 @@
 import type { TableProps } from 'antd';
-import { Button, Modal, Space, Table } from 'antd';
-import { Form } from 'antd';
-import { Input } from 'antd';
+import { Button, Form, Input, Modal, Space, Table } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 
@@ -26,7 +24,7 @@ const MainTable = () => {
     setIsModalOpen(true);
   };
 
-  const hadleSearchInput = (searchText: string) => {
+  const handleSearchInput = (searchText: string) => {
     const filteredData = tableData.filter((row) =>
       Object.values(row).some((value) =>
         String(value).toLowerCase().includes(searchText.toLowerCase())
@@ -120,7 +118,7 @@ const MainTable = () => {
       <Space size={'middle'}>
         <Input
           placeholder="search"
-          onChange={(e) => hadleSearchInput(e.target.value)}
+          onChange={(e) => handleSearchInput(e.target.value)}
         />{' '}
         <Button type="primary" onClick={handleButton}>
           {' '}

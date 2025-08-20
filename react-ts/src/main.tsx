@@ -3,6 +3,8 @@ import * as ReactDom from 'react-dom/client';
 
 import App from './App';
 
+import '@/styles/main.scss';
+
 const container = document.getElementById('root');
 
 if (!container) throw new Error('Root container not found');
