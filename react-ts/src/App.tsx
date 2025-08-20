@@ -1,6 +1,7 @@
-import MainTable from './components/table/main-table';
 import { Button } from 'antd';
 import { useState } from 'react';
+
+import MainTable from './components/table/main-table';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -8,6 +9,7 @@ function App() {
   const handleButton = () => {
     setIsModalOpen(true);
   };
+
   return (
     <main>
       <Button type="primary" onClick={handleButton}>
