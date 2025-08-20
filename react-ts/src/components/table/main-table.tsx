@@ -10,21 +10,21 @@ import { dataExample } from '@/shared/constants/data-example';
 import TABLE_DATA from '@/shared/constants/table-data';
 import type { DataType } from '@/shared/types/data-type';
 
-interface MainTableProps {
-  isOpen: boolean;
-}
-
-const MainTable = ({ isOpen }: MainTableProps) => {
+const MainTable = () => {
   const [tableData, setTableData] = useState(dataExample);
   const [editingRecord, setEditingRecord] = useState<DataType | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(isOpen);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
 
   console.log(tableData);
 
   useEffect(() => {
-    if (!isOpen) form.resetFields();
-  }, [isOpen, form]);
+    if (!isModalOpen) form.resetFields();
+  }, [isModalOpen, form]);
+
+  const handleButton = () => {
+    setIsModalOpen(true);
+  };
 
   const handleEdit = (record: DataType) => {
     setEditingRecord(record);
@@ -85,6 +85,8 @@ const MainTable = ({ isOpen }: MainTableProps) => {
       title: TABLE_DATA.number.title,
       dataIndex: TABLE_DATA.number.dataIndex,
       key: TABLE_DATA.number.key,
+      defaultSortOrder: 'descend',
+      sorter: (a, b) => a.number - b.number,
     },
     {
       title: TABLE_DATA.action.title,
@@ -102,10 +104,17 @@ const MainTable = ({ isOpen }: MainTableProps) => {
 
   return (
     <>
+      <Button type="primary" onClick={handleButton}>
+        {' '}
+        Add new row{' '}
+      </Button>
       <Table<DataType> dataSource={tableData} columns={columns} />
       <Modal
         open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={() => {
+          setIsModalOpen(false);
+          setEditingRecord(null);
+        }}
         footer={null}
       >
         <ModalForm form={form} onSubmit={handleSubmit} />
