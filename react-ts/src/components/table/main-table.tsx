@@ -13,7 +13,7 @@ const MainTable = () => {
   const [tableData, setTableData] = useState(dataExample);
   const [editingRecord, setEditingRecord] = useState<DataType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filteredData, setFilteredData] = useState<DataType[] | null>(null);
+  const [searchValue, setSearchValue] = useState('');
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -25,16 +25,21 @@ const MainTable = () => {
   };
 
   const handleSearchInput = (searchText: string) => {
-    const filteredData = tableData.filter((row) =>
+    setSearchValue(searchText);
+  };
+
+  const getFilteredData = () => {
+    if (!searchValue) return tableData;
+
+    return tableData.filter((row) =>
       Object.values(row).some((value) =>
-        String(value).toLowerCase().includes(searchText.toLowerCase())
+        String(value).toLowerCase().includes(searchValue.toLowerCase())
       )
     );
-
-    setFilteredData(filteredData);
   };
 
   const handleEdit = (record: DataType) => {
+    setSearchValue('');
     setEditingRecord(record);
     form.setFieldsValue({
       name: record.name,
@@ -49,6 +54,8 @@ const MainTable = () => {
   };
 
   const handleSubmit = (values: FieldType) => {
+    setSearchValue('');
+
     if (editingRecord) {
       setTableData((prev) =>
         prev.map((item) =>
@@ -118,6 +125,7 @@ const MainTable = () => {
       <Space size={'middle'}>
         <Input
           placeholder="search"
+          value={searchValue ?? ''}
           onChange={(e) => handleSearchInput(e.target.value)}
         />{' '}
         <Button type="primary" onClick={handleButton}>
@@ -126,10 +134,7 @@ const MainTable = () => {
         </Button>
       </Space>
 
-      <Table<DataType>
-        dataSource={filteredData ?? tableData}
-        columns={columns}
-      />
+      <Table<DataType> dataSource={getFilteredData()} columns={columns} />
       <Modal
         open={isModalOpen}
         onCancel={() => {
